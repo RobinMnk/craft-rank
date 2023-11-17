@@ -1,2 +1,3 @@
 .idea/
-craft-rank/cmake-build-*/*
+server/craft-rank/cmake-build-*/*
+server/bridge/node_modules/*
