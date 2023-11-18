@@ -1,4 +1,5 @@
 #include "database_reader.h"
+#include <cstdlib> 
 
 namespace db {
 
@@ -23,10 +24,14 @@ namespace db {
     double queryDatabaseForDistance(const std::string& zipCode1, const std::string& zipCode2)
     {
         sqlite3 *db;
-        const char *dbName = "/home/theresa/craft-rank/server/database/check24-profis.db";
-        const char *query = "SELECT lat, lon FROM postcode WHERE postcode IN ('01067', '01069');";
+        const char* dbShortName = "check24-profis.db";
+        const char* homeDir = getenv("HOME");
+        std::string dbFilePath = std::string(homeDir) + "/craft-rank/server/database/" + std::string(dbShortName);
+        const char *dbName = dbFilePath.c_str();
+        std::string query = "SELECT lat, lon FROM postcode WHERE postcode IN ('" + zipCode1 + "', '" + zipCode2 + "');";
+        const char *queryStr = query.c_str();
 
-        int rc = sqlite3_open(dbName, &db);
+        int rc = sqlite3_open_v2(dbName, &db, SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_READWRITE ,nullptr);
 
         if (rc)
         {
@@ -37,7 +42,7 @@ namespace db {
 
         std::vector<LatLon> latLonList;
         // Execute the SQL query and provide the callback function
-        rc = sqlite3_exec(db, query, Callback, &latLonList, nullptr);
+        rc = sqlite3_exec(db, queryStr, Callback, &latLonList, nullptr);
 
         if (rc != SQLITE_OK) {
             std::cerr << "SQL error: " << sqlite3_errmsg(db) << std::endl;

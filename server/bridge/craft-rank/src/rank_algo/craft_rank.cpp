@@ -25,7 +25,7 @@ void CraftRankHandler::queryDatabase(ZipCodeInfo& zipCode, BoundingCoordinates& 
     computeBoundingCoordinates(zipCode, boundingC);
     std::cout << "Calculate distance" << calculateDistance(40.6892, -74.0444, 48.8583, 2.2945) << std::endl;
 
-} */
+} 
 
 void CraftRankHandler::generateRelevantZipCodes(int startZip, std::vector<int> relevantZips) {
     std::unordered_set<int> visited;
@@ -122,3 +122,4 @@ std::thread ParallelRank::start() {
 
 
 
+*/
