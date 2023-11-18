@@ -142,8 +142,11 @@ void ParallelRank::process() {
         queue->pop_back();
         lock.unlock();
 
-        Result res{workerId, rank(baseZip, workerId)};
-        safeWrite(res);
+        float rk = rank(baseZip, workerId);
+        if (rk > 0) {
+            Result res{workerId, rk};
+            safeWrite(res);
+        }
     }
 }
 
