@@ -34,6 +34,8 @@ public:
 
 private:
 
+    float CraftRankHandler::CalculateDistance(float lat1, float lon1, float lat2, float lon2);
+    
     // Private helper function to compute latmin and latmax
     void computeBoundingCoordinates(const ZipCode& zipCode, BoundingCoordinates& boundingC);
 

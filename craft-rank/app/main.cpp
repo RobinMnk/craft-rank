@@ -1,5 +1,6 @@
 #include <iostream>
 #include "../rank_algo/craft_rank.h"
+#include <sqlite3.h> 
 
 int main() {
     CraftRankHandler craftRankHandler;
@@ -12,5 +13,6 @@ int main() {
     std::cout << "maxLat: " << boundingCoordinates.maxLat << std::endl;
     std::cout << "minLon: " << boundingCoordinates.minLon << std::endl;
     std::cout << "maxLon: " << boundingCoordinates.maxLon << std::endl;
+
     return 0;
 }

@@ -17,8 +17,6 @@ void CraftRankHandler::computeBoundingCoordinates(const ZipCode& zipCode, Boundi
     boundingC.minLat = zipCode.lat - r;
     boundingC.maxLat = zipCode.lat + r;
 
-    std::cout << r << std::endl;
-
     if (boundingC.minLat > MIN_LAT && boundingC.maxLat < MAX_LAT) {
         double deltaLon = asin(sin(r) / cos(zipCode.lat));
         boundingC.minLon = zipCode.lon - deltaLon;
@@ -34,6 +32,19 @@ void CraftRankHandler::computeBoundingCoordinates(const ZipCode& zipCode, Boundi
     }
 }
 
+float CraftRankHandler::CalculateDistance(float lat1, float lon1, float lat2, float lon2) {
+    // Convert latitude and longitude values from degrees to radians
+    lat1 = lat1 * M_PI / 180.0;
+    lon1 = lon1 * M_PI / 180.0;
+    lat2 = lat2 * M_PI / 180.0;
+    lon2 = lon2 * M_PI / 180.0;
+
+    // Calculate the great circle distance
+    float deltaLon = lon1 - lon2;
+    float distance = acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(deltaLon)) * EARTH_RADIUS_KM;
+
+    return distance;
+}
 
 // Function to query a database and fill the ZipCode struct
 void CraftRankHandler::queryDatabase(ZipCode& zipCode, BoundingCoordinates& boundingC) {
