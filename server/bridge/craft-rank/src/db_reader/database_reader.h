@@ -8,6 +8,9 @@ struct ZipCodeInfo {
 };
 
 namespace db {
-    std::vector<int> getNeighboringZips(int zipCode);
+    void getNeighboringZips(int zipCode, const std::vector<int>& neighbors);
+
     ZipCodeInfo getZipInfo(int zipCode);
+
+
 }

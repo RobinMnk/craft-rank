@@ -1,5 +1,4 @@
 #include "craft_rank.h"
-#include "../db_reader/database_reader.h"
 #include <iostream>
 #include <queue>
 
@@ -55,8 +54,11 @@ void CraftRankHandler::queryDatabase(ZipCodeInfo& zipCode, BoundingCoordinates& 
 void CraftRankHandler::generateRelevantZipCodes(int startZip) {
     visited.clear();
     relevantZips.clear();
+
     std::queue<int> q{};
     q.push(startZip);
+
+    std::vector<int> neighbors;
 
     while(!q.empty()) {
         int currentZip = q.front();
@@ -67,9 +69,16 @@ void CraftRankHandler::generateRelevantZipCodes(int startZip) {
         visited.insert(currentZip);
         relevantZips.push_back(currentZip);
 
-        for(int neighbor: db::getNeighboringZips(currentZip)) {
-            q.push(neighbor);
+        db::getNeighboringZips(currentZip, neighbors);
+        for(int nb: neighbors) {
+            q.push(nb);
         }
     }
+}
+
+void CraftRankHandler::getListOfWorkers(int zipCode) {
+    generateRelevantZipCodes(zipCode);
+
+
 }
 

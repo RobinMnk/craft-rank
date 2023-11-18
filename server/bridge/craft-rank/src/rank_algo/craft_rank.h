@@ -38,9 +38,11 @@ public:
     // Function to query a database and fill the ZipCodeInfo struct
     void queryDatabase(ZipCodeInfo& zipCode, BoundingCoordinates& boundingC);
 
-    void generateRelevantZipCodes(int startingZip);
+    void getListOfWorkers(int zipCode);
 
 private:
+
+    void generateRelevantZipCodes(int startingZip);
 
     // Private helper function to compute latmin and latmax
     void computeBoundingCoordinates(const ZipCodeInfo& zipCode, BoundingCoordinates& boundingC);
