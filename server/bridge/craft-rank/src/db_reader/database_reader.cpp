@@ -2,6 +2,7 @@
 #include <sqlite3.h>
 #include <cmath>
 #include "../rank_algo/craft_rank.h"
+
 namespace db
 {
     // Callback function to retrieve latitude and longitude values from the database

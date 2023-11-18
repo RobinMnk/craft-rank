@@ -54,8 +54,6 @@ public:
 
 private:
 
-    float calculateDistance(float lat1, float lon1, float lat2, float lon2);
-
     static void generateRelevantZipCodes(int startingZip, std::vector<int> relevantZips);
 
     // Private helper function to compute latmin and latmax

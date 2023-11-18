@@ -96,6 +96,8 @@ void CraftRankHandler::getListOfWorkers(int zipCode) {
 
     std::vector<int> workers;
     db::allWorkersForZips(relevantZips, workers);
+
+    // TODO: Give all workers to ParallelRank for ranking
 }
 
 
