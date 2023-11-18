@@ -49,7 +49,6 @@ float CraftRankHandler::calculateDistance(float lat1, float lon1, float lat2, fl
     return distance;
 }
 
-
 // Function to query a database and fill the ZipCodeInfo struct
 void CraftRankHandler::queryDatabase(ZipCodeInfo& zipCode, BoundingCoordinates& boundingC) {
     // Replace this with your actual database query logic
@@ -62,6 +61,7 @@ void CraftRankHandler::queryDatabase(ZipCodeInfo& zipCode, BoundingCoordinates& 
     zipCode.distance = 1000;
 
     computeBoundingCoordinates(zipCode, boundingC);
+    std::cout << "Calculate distance" << calculateDistance(40.6892, -74.0444, 48.8583, 2.2945) << std::endl;
 
 }
 
