@@ -17,8 +17,15 @@ void test() {
     std::cout << "maxLon: " << boundingCoordinates.maxLon << std::endl;
 }
 
+void handleZip(int zip) {
+
+
+}
+
+
 int main() {
-    test();
-    db::queryDatabaseForDistance("01067", "01069");
+
+
+
     return 0;
 }

@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <mutex>
 #include <condition_variable>
+#include <utility>
 #include "../db_reader/database_reader.h"
 
 const int EARTH_RADIUS_KM = 6371;
@@ -20,6 +21,11 @@ const float MAX_ZIP_DISTANCE = 200; // TODO: anpassen!
 
 struct BoundingCoordinates {
     float minLat{0}, maxLat{0}, minLon{0}, maxLon{0};
+};
+
+struct Result {
+    int workerId;
+    float rank;
 };
 
 
@@ -41,52 +47,41 @@ public:
     // Function to query a database and fill the ZipCodeInfo struct
     void queryDatabase(ZipCodeInfo& zipCode, BoundingCoordinates& boundingC);
 
-    void getListOfWorkers(int zipCode);
+    static void getListOfWorkers(int zipCode);
 
     float calculateDistance(float lat1, float lon1, float lat2, float lon2);
 
 
 private:
 
-    void generateRelevantZipCodes(int startingZip, std::vector<int> relevantZips);
+    float calculateDistance(float lat1, float lon1, float lat2, float lon2);
+
+    static void generateRelevantZipCodes(int startingZip, std::vector<int> relevantZips);
 
     // Private helper function to compute latmin and latmax
     void computeBoundingCoordinates(const ZipCodeInfo& zipCode, BoundingCoordinates& boundingC);
 };
 
-
 class ParallelRank {
-    std::vector<int> queue;
+    std::shared_ptr<std::vector<int>> queue;
 
-    std::mutex mtx;
+    std::mutex mtx_queue, mtx_results;
     std::condition_variable cv;
 
+    int baseZip;
+    std::shared_ptr<std::vector<Result>> results;
 public:
-    void reset() {
-        queue.clear();
-    }
+    std::thread start();
 
-    void insert(int value) {
-        std::lock_guard<std::mutex> lock(mtx);
-        queue.push_back(value);
-        cv.notify_one();
-    }
+    void init(int zip, std::shared_ptr<std::vector<int>>& q, std::shared_ptr<std::vector<Result>>& res);
 
-    void process() {
-        while (true) {
-            std::unique_lock<std::mutex> lock(mtx);
-            cv.wait(lock, [this] { return !queue.empty(); });
-            int data = queue.back();
-            queue.pop_back();
-            lock.unlock();
+    void insert(int value);
 
+    void process();
 
-        }
-    }
-
-
+private:
+    void safeWrite(Result res);
 };
-
 
 
 #endif // CRAFT_RANK_H
