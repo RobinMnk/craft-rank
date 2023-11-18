@@ -98,10 +98,22 @@ void CraftRankHandler::getListOfWorkers(int zipCode) {
     db::allWorkersForZips(relevantZips, workers);
 
 
-
 }
 
-float CraftRankHandler::rank(int zipCode, int workerId) {
-    return 0;
+float rank(int zipCode, int workerId) {
+    WorkerInfo workerInfo = db::getWorkerInfo(workerId);
+    ZipCodeInfo zipCodeInfo = db::getZipInfo(zipCode);
+
+    auto adjustedMaxDriveDistance = static_cast<float>(workerInfo.maxDrivingDistance + zipCodeInfo.extraDistance);
+    float distance = distanceBetweenZipAndWorker(zipCode, workerId);
+
+    if (distance > adjustedMaxDriveDistance) {
+        return -10;
+    }
+
+    float distance_score = 1 - (distance / adjustedMaxDriveDistance);
+    float distance_weight = distance > 80 ? 0.01 : 0.15;
+
+    return distance_weight * distance_score + (1 - distance_weight) * workerInfo.profileScore;
 }
 

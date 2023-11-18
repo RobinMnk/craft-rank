@@ -4,6 +4,8 @@
 #include <cmath>
 #include <string>
 #include <unordered_set>
+#include <mutex>
+#include <condition_variable>
 #include "../db_reader/database_reader.h"
 
 const int EARTH_RADIUS_KM = 6371;
@@ -21,6 +23,9 @@ struct BoundingCoordinates {
 
 
 float distanceBetweenZips(int zipA, int zipB);
+float distanceBetweenZipAndWorker(int zip, int workerId);
+
+float rank(int zipCode, int workerId);
 
 
 class CraftRankHandler {
@@ -37,7 +42,6 @@ public:
 
     void getListOfWorkers(int zipCode);
 
-    float rank(int zipCode, int workerId);
 
 private:
 
@@ -48,4 +52,40 @@ private:
     // Private helper function to compute latmin and latmax
     void computeBoundingCoordinates(const ZipCodeInfo& zipCode, BoundingCoordinates& boundingC);
 };
+
+
+class ParallelRank {
+    std::vector<int> queue;
+
+    std::mutex mtx;
+    std::condition_variable cv;
+
+public:
+    void reset() {
+        queue.clear();
+    }
+
+    void insert(int value) {
+        std::lock_guard<std::mutex> lock(mtx);
+        queue.push_back(value);
+        cv.notify_one();
+    }
+
+    void process() {
+        while (true) {
+            std::unique_lock<std::mutex> lock(mtx);
+            cv.wait(lock, [this] { return !queue.empty(); });
+            int data = queue.back();
+            queue.pop_back();
+            lock.unlock();
+
+
+        }
+    }
+
+
+};
+
+
+
 #endif // CRAFT_RANK_H
