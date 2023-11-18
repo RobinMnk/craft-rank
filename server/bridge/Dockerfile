@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 ARG GCC_VERSION=13.2.0
-FROM gcc:$GCC_VERSION
+FROM gcc:$GCC_VERSION as preface
 
 ARG CMAKE_VERSION=3.21.0
 
@@ -17,14 +17,7 @@ ENV CGO_ENABLED=0
 
 COPY craft-rank/ .
 
-RUN mkdir build
-RUN cd build
-RUN cmake ..
-RUN cmake --build .
-RUN cmake --install .
-RUN make
-RUN cd ..
-
+RUN mkdir build && cd build && cmake .. && cmake --build . && cmake --install . && make && cd ..
 
 # Comments are provided throughout this file to help you get started.
 # If you need more help, visit the Dockerfile reference guide at
@@ -32,7 +25,7 @@ RUN cd ..
 
 
 FROM node:20.9.0-bookworm
-COPY --from=0 CraftRank /usr/src/app/src/CraftRank
+COPY --from=preface build/CraftRank /usr/src/app/src/CraftRank
 
 ENV PATH="/usr/src/app/src:${PATH}"
 RUN chmod 777 /usr/src/app/src/CraftRank
