@@ -1,6 +1,7 @@
 'use strict';
 
 var express = require('express');
+const { exec } = require("child_process");
 var app = express();
 
 app.set("port", process.env.PORT || 3000);
@@ -8,6 +9,9 @@ app.set("port", process.env.PORT || 3000);
 app.get('/', function (req, res) {
    res.writeHead(200, {'Content-Type': 'application/json'});
    var response = { "response" : "This is GET method." }
+
+   exec("./CraftRank", (error, stdout, stderr) => console.log(stdout));
+
    console.log(response);
    res.end(JSON.stringify(response));
 })
