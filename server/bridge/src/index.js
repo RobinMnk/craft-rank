@@ -10,7 +10,9 @@ app.get('/', function (req, res) {
    res.writeHead(200, {'Content-Type': 'application/json'});
    var response = { "response" : "This is GET method." }
 
-   exec("./CraftRank", (error, stdout, stderr) => console.log(stdout));
+   exec("./src/CraftRank", (error, stdout, stderr) => {
+      console.log(stdout);
+   });
 
    console.log(response);
    res.end(JSON.stringify(response));
