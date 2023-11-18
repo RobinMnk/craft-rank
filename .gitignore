@@ -1,3 +1,5 @@
 .idea/
-craft-rank/cmake-build-*/
-server/node_modules/
+server/bridge/craft-rank/cmake-build-*/
+server/bridge/node_modules/
+.vscode/
+craft-rank/build/

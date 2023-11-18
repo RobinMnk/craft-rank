@@ -1,5 +1,7 @@
 #include "craft_rank.h"
+#include "../db_reader/database_reader.h"
 #include <iostream>
+#include <queue>
 
 // Constructor
 CraftRankHandler::CraftRankHandler() {
@@ -12,7 +14,7 @@ CraftRankHandler::~CraftRankHandler() {
 }
 
 // Private helper function to compute bounding coordinates
-void CraftRankHandler::computeBoundingCoordinates(const ZipCode& zipCode, BoundingCoordinates& boundingC) {
+void CraftRankHandler::computeBoundingCoordinates(const ZipCodeInfo& zipCode, BoundingCoordinates& boundingC) {
     float r = static_cast<float>(zipCode.distance) / static_cast<float>(EARTH_RADIUS_KM);
     boundingC.minLat = zipCode.lat - r;
     boundingC.maxLat = zipCode.lat + r;
@@ -46,13 +48,13 @@ float CraftRankHandler::CalculateDistance(float lat1, float lon1, float lat2, fl
     return distance;
 }
 
-// Function to query a database and fill the ZipCode struct
-void CraftRankHandler::queryDatabase(ZipCode& zipCode, BoundingCoordinates& boundingC) {
+// Function to query a database and fill the ZipCodeInfo struct
+void CraftRankHandler::queryDatabase(ZipCodeInfo& zipCode, BoundingCoordinates& boundingC) {
     // Replace this with your actual database query logic
     // For demonstration purposes, we'll set some example values.
     
-    // Example: Query group, latitude, longitude, and max_driving_dist from the database
-    zipCode.group = 0;
+    // Example: Query extraDistance, latitude, longitude, and max_driving_dist from the database
+    zipCode.extraDistance = 0;
     zipCode.lat = 1.3963; // Example latitude in radians
     zipCode.lon = -0.6981; // Example longitude in radians
     zipCode.distance = 1000;
@@ -60,3 +62,25 @@ void CraftRankHandler::queryDatabase(ZipCode& zipCode, BoundingCoordinates& boun
     computeBoundingCoordinates(zipCode, boundingC);
 
 }
+
+void CraftRankHandler::generateRelevantZipCodes(int startZip) {
+    visited.clear();
+    relevantZips.clear();
+    std::queue<int> q{};
+    q.push(startZip);
+
+    while(!q.empty()) {
+        int currentZip = q.front();
+        q.pop();
+        if(visited.contains(currentZip) || distanceBetweenZips(startZip, currentZip) > MAX_ZIP_DISTANCE) {
+            continue;
+        }
+        visited.insert(currentZip);
+        relevantZips.push_back(currentZip);
+
+        for(int neighbor: db::getNeighboringZips(currentZip)) {
+            q.push(neighbor);
+        }
+    }
+}
+
