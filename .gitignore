@@ -3,3 +3,4 @@ server/bridge/craft-rank/cmake-build-*/
 server/bridge/node_modules/
 .vscode/
 craft-rank/build/
+server/bridge/craft-rank/build/

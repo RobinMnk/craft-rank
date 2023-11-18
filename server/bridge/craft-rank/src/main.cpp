@@ -1,7 +1,8 @@
 #include <iostream>
-#include "../rank_algo/craft_rank.h"
 #include <sqlite3.h> 
 #include "rank_algo/craft_rank.h"
+#include "db_reader/database_reader.h"
+
 
 void test() {
     CraftRankHandler craftRankHandler;
@@ -17,5 +18,7 @@ void test() {
 }
 
 int main() {
+    test();
+    db::queryDatabaseForDistance("01067", "01069");
     return 0;
 }

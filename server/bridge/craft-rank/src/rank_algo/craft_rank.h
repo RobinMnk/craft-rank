@@ -1,3 +1,4 @@
+#pragma once
 #ifndef CRAFT_RANK_H
 #define CRAFT_RANK_H
 
@@ -42,10 +43,10 @@ public:
 
     void getListOfWorkers(int zipCode);
 
+    float calculateDistance(float lat1, float lon1, float lat2, float lon2);
+
 
 private:
-
-    float calculateDistance(float lat1, float lon1, float lat2, float lon2);
 
     void generateRelevantZipCodes(int startingZip, std::vector<int> relevantZips);
 
