@@ -1,9 +1,9 @@
 #include <iostream>
 #include "rank_algo/craft_rank.h"
 
-int main() {
+void test() {
     CraftRankHandler craftRankHandler;
-    ZipCode zipCode;
+    ZipCodeInfo zipCode;
     BoundingCoordinates boundingCoordinates;
 
     craftRankHandler.queryDatabase(zipCode, boundingCoordinates);
@@ -12,5 +12,8 @@ int main() {
     std::cout << "maxLat: " << boundingCoordinates.maxLat << std::endl;
     std::cout << "minLon: " << boundingCoordinates.minLon << std::endl;
     std::cout << "maxLon: " << boundingCoordinates.maxLon << std::endl;
+}
+
+int main() {
     return 0;
 }
