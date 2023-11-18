@@ -96,9 +96,8 @@ void CraftRankHandler::getListOfWorkers(int zipCode) {
 
     std::vector<int> workers;
     db::allWorkersForZips(relevantZips, workers);
-
-
 }
+
 
 float rank(int zipCode, int workerId) {
     WorkerInfo workerInfo = db::getWorkerInfo(workerId);
@@ -116,4 +115,43 @@ float rank(int zipCode, int workerId) {
 
     return distance_weight * distance_score + (1 - distance_weight) * workerInfo.profileScore;
 }
+
+
+void ParallelRank::init(int zip, std::shared_ptr<std::vector<int>>& workerIds, std::shared_ptr<std::vector<Result>>& res) {
+    baseZip = zip;
+    queue = workerIds;
+    results = res;
+}
+
+void ParallelRank::insert(int value) {
+    std::lock_guard<std::mutex> lock(mtx_queue);
+    queue->push_back(value);
+    cv.notify_one();
+}
+
+void ParallelRank::safeWrite(Result res) {
+    std::lock_guard<std::mutex> lock(mtx_results);
+    results->push_back(res);
+}
+
+void ParallelRank::process() {
+    while (!queue->empty()) {
+        std::unique_lock<std::mutex> lock(mtx_queue);
+        cv.wait(lock, [this] { return !queue->empty(); });
+        int workerId = queue->back();
+        queue->pop_back();
+        lock.unlock();
+
+        Result res{workerId, rank(baseZip, workerId)};
+        safeWrite(res);
+    }
+}
+
+std::thread ParallelRank::start() {
+    std::thread t(&ParallelRank::process, this);
+    return t;
+}
+
+
+
 
