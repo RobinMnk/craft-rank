@@ -8,7 +8,7 @@ void test() {
     ZipCodeInfo zipCode;
     BoundingCoordinates boundingCoordinates;
 
-    craftRankHandler.queryDatabase(zipCode, boundingCoordinates);
+//    craftRankHandler.queryDatabase(zipCode, boundingCoordinates);
 
     std::cout << "minLat: " << boundingCoordinates.minLat << std::endl;
     std::cout << "maxLat: " << boundingCoordinates.maxLat << std::endl;
