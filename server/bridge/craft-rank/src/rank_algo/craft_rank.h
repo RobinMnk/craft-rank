@@ -24,9 +24,6 @@ float distanceBetweenZips(int zipA, int zipB);
 
 
 class CraftRankHandler {
-    std::vector<int> relevantZips;
-    std::unordered_set<int> visited;
-
 public:
 
     // Constructor
@@ -40,9 +37,11 @@ public:
 
     void getListOfWorkers(int zipCode);
 
+    float rank(int zipCode, int workerId);
+
 private:
 
-    void generateRelevantZipCodes(int startingZip);
+    void generateRelevantZipCodes(int startingZip, std::vector<int> relevantZips);
 
     // Private helper function to compute latmin and latmax
     void computeBoundingCoordinates(const ZipCodeInfo& zipCode, BoundingCoordinates& boundingC);

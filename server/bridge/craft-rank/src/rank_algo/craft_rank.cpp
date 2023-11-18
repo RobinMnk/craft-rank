@@ -18,6 +18,8 @@ void CraftRankHandler::computeBoundingCoordinates(const ZipCodeInfo& zipCode, Bo
     boundingC.minLat = zipCode.lat - r;
     boundingC.maxLat = zipCode.lat + r;
 
+    std::cout << r << std::endl;
+
     if (boundingC.minLat > MIN_LAT && boundingC.maxLat < MAX_LAT) {
         double deltaLon = asin(sin(r) / cos(zipCode.lat));
         boundingC.minLon = zipCode.lon - deltaLon;
@@ -33,25 +35,12 @@ void CraftRankHandler::computeBoundingCoordinates(const ZipCodeInfo& zipCode, Bo
     }
 }
 
-float CraftRankHandler::CalculateDistance(float lat1, float lon1, float lat2, float lon2) {
-    // Convert latitude and longitude values from degrees to radians
-    lat1 = lat1 * M_PI / 180.0;
-    lon1 = lon1 * M_PI / 180.0;
-    lat2 = lat2 * M_PI / 180.0;
-    lon2 = lon2 * M_PI / 180.0;
-
-    // Calculate the great circle distance
-    float deltaLon = lon1 - lon2;
-    float distance = acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(deltaLon)) * EARTH_RADIUS_KM;
-
-    return distance;
-}
 
 // Function to query a database and fill the ZipCodeInfo struct
 void CraftRankHandler::queryDatabase(ZipCodeInfo& zipCode, BoundingCoordinates& boundingC) {
     // Replace this with your actual database query logic
     // For demonstration purposes, we'll set some example values.
-    
+
     // Example: Query extraDistance, latitude, longitude, and max_driving_dist from the database
     zipCode.extraDistance = 0;
     zipCode.lat = 1.3963; // Example latitude in radians
@@ -62,8 +51,8 @@ void CraftRankHandler::queryDatabase(ZipCodeInfo& zipCode, BoundingCoordinates& 
 
 }
 
-void CraftRankHandler::generateRelevantZipCodes(int startZip) {
-    visited.clear();
+void CraftRankHandler::generateRelevantZipCodes(int startZip, std::vector<int> relevantZips) {
+    std::unordered_set<int> visited;
     relevantZips.clear();
 
     std::queue<int> q{};
@@ -88,8 +77,17 @@ void CraftRankHandler::generateRelevantZipCodes(int startZip) {
 }
 
 void CraftRankHandler::getListOfWorkers(int zipCode) {
-    generateRelevantZipCodes(zipCode);
+    std::vector<int> relevantZips;
+    generateRelevantZipCodes(zipCode, relevantZips);
+
+    std::vector<int> workers;
+    db::allWorkersForZips(relevantZips, workers);
 
 
+
+}
+
+float CraftRankHandler::rank(int zipCode, int workerId) {
+    return 0;
 }
 
