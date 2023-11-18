@@ -13,9 +13,11 @@ CraftRankHandler::~CraftRankHandler() {
 
 // Private helper function to compute bounding coordinates
 void CraftRankHandler::computeBoundingCoordinates(const ZipCode& zipCode, BoundingCoordinates& boundingC) {
-    float r = zipCode.distance / EARTH_RADIUS_KM;
+    float r = static_cast<float>(zipCode.distance) / static_cast<float>(EARTH_RADIUS_KM);
     boundingC.minLat = zipCode.lat - r;
     boundingC.maxLat = zipCode.lat + r;
+
+    std::cout << r << std::endl;
 
     if (boundingC.minLat > MIN_LAT && boundingC.maxLat < MAX_LAT) {
         double deltaLon = asin(sin(r) / cos(zipCode.lat));
@@ -39,10 +41,10 @@ void CraftRankHandler::queryDatabase(ZipCode& zipCode, BoundingCoordinates& boun
     // For demonstration purposes, we'll set some example values.
     
     // Example: Query group, latitude, longitude, and max_driving_dist from the database
-    zipCode.group = 2;
-    zipCode.lat = 0.7854f; // Example latitude in radians
-    zipCode.lon = -1.7453f; // Example longitude in radians
-    zipCode.distance = 40;
+    zipCode.group = 0;
+    zipCode.lat = 1.3963; // Example latitude in radians
+    zipCode.lon = -0.6981; // Example longitude in radians
+    zipCode.distance = 1000;
 
     computeBoundingCoordinates(zipCode, boundingC);
 

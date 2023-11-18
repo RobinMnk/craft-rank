@@ -14,7 +14,7 @@ struct ZipCode {
     int group;
     float lat; // Latitude in radians
     float lon; // Longitude in radians
-    int distance; // Neighbour distance
+    int distance=40; // Neighbour distance
 };
 
 struct BoundingCoordinates {
