@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../rank_algo/craft_rank.h"
+#include "rank_algo/craft_rank.h"
 
 int main() {
     CraftRankHandler craftRankHandler;
