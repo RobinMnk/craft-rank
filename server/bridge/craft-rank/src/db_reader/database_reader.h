@@ -1,24 +1,9 @@
-#pragma once
-#include <vector>
+#include "../rank_algo/core.h"
+#include <iostream>
+#include <sqlite3.h>
 
-struct ZipCodeInfo {
-    int extraDistance{0};
-    float lat{0}; // Latitude in radians
-    float lon{0}; // Longitude in radians
-    int distance{40}; // Neighbour distance
-};
-
-struct LatLon {
-    float lat{0};
-    float lon{0};
-};
-
-struct WorkerInfo {
-    float lat{0}; // Latitude in radians
-    float lon{0}; // Longitude in radians
-    int maxDrivingDistance{40}; // Neighbour distance
-    float profileScore{0};
-};
+#ifndef CRAFTRANK_DATABASE_READER_H
+#define CRAFTRANK_DATABASE_READER_H
 
 namespace db {
 
@@ -26,7 +11,7 @@ namespace db {
 
     void allWorkersForZips(const std::vector<int>& zips, const std::vector<int>& workers);
 
-    int queryDatabaseForDistance(std::string zipCode1, std::string zipCode2);
+    double queryDatabaseForDistance(const std::string& zipCode1, const std::string& zipCode2);
 
     int Callback(void* data, int argc, char** argv, char** colNames);
 
@@ -35,3 +20,5 @@ namespace db {
     WorkerInfo getWorkerInfo(int workerId);
 
 }
+
+#endif //CRAFTRANK_DATABASE_READER_H

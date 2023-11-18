@@ -1,14 +1,11 @@
-#include <iostream>
-#include <sqlite3.h>
-#include <cmath>
-#include "../rank_algo/craft_rank.h"
+#include "database_reader.h"
 
-namespace db
-{
+namespace db {
+
     // Callback function to retrieve latitude and longitude values from the database
     int Callback(void *data, int argc, char **argv, char **colNames)
     {
-        std::vector<LatLon>* latLonList = static_cast<std::vector<LatLon>*>(data);
+        auto* latLonList = static_cast<std::vector<LatLon>*>(data);
         if (argc != 2)
         {
             std::cerr << "Error: Not enough rows returned from the database." << std::endl;
@@ -16,14 +13,14 @@ namespace db
         }
 
         // Extract latitude and longitude values
-        float lat1 = std::stod(argv[0]);
-        float lon1 = std::stod(argv[1]);
+        double lat1 = std::stod(argv[0]);
+        double lon1 = std::stod(argv[1]);
         latLonList->push_back({lat1, lon1});
 
         return 0;
     }
 
-    int queryDatabaseForDistance(std::string zipCode1, std::string zipCode2)
+    double queryDatabaseForDistance(const std::string& zipCode1, const std::string& zipCode2)
     {
         sqlite3 *db;
         const char *dbName = "/home/theresa/craft-rank/server/database/check24-profis.db";
@@ -40,18 +37,9 @@ namespace db
 
         std::vector<LatLon> latLonList;
         // Execute the SQL query and provide the callback function
-        rc = sqlite3_exec(db, query, Callback, &latLonList, 0);
+        rc = sqlite3_exec(db, query, Callback, &latLonList, nullptr);
 
-
-        CraftRankHandler craftRankHandler;
-        // Calculate the distance
-        double distance = craftRankHandler.calculateDistance(latLonList[0].lat, latLonList[0].lon, latLonList[1].lat, latLonList[1].lat);
-
-        // Output the calculated distance
-        std::cout << "Distance between the two zip codes: " << distance << " kilometers" << std::endl;
-
-        if (rc != SQLITE_OK)
-        {
+        if (rc != SQLITE_OK) {
             std::cerr << "SQL error: " << sqlite3_errmsg(db) << std::endl;
             sqlite3_close(db);
             throw std::runtime_error("SQL error");
@@ -59,6 +47,13 @@ namespace db
 
         // Close the database
         sqlite3_close(db);
+
+        // Calculate the distance
+        double distance = calculateDistance(latLonList[0].lat, latLonList[0].lon, latLonList[1].lat, latLonList[1].lat);
+
+        // Output the calculated distance
+        std::cout << "Distance between the two zip codes: " << distance << " kilometers" << std::endl;
+
         return distance;
     }
 

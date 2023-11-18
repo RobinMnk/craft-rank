@@ -1,5 +1,4 @@
 #include <iostream>
-#include <sqlite3.h> 
 #include "rank_algo/craft_rank.h"
 #include "db_reader/database_reader.h"
 

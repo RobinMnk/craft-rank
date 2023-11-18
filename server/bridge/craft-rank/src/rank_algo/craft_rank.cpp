@@ -1,6 +1,4 @@
 #include "craft_rank.h"
-#include <iostream>
-#include <queue>
 
 // Constructor
 CraftRankHandler::CraftRankHandler() {
@@ -12,43 +10,7 @@ CraftRankHandler::~CraftRankHandler() {
     // Cleanup or release resources here, if needed
 }
 
-// Private helper function to compute bounding coordinates
-void CraftRankHandler::computeBoundingCoordinates(const ZipCodeInfo& zipCode, BoundingCoordinates& boundingC) {
-    float r = static_cast<float>(zipCode.distance) / static_cast<float>(EARTH_RADIUS_KM);
-    boundingC.minLat = zipCode.lat - r;
-    boundingC.maxLat = zipCode.lat + r;
-
-    std::cout << r << std::endl;
-
-    if (boundingC.minLat > MIN_LAT && boundingC.maxLat < MAX_LAT) {
-        double deltaLon = asin(sin(r) / cos(zipCode.lat));
-        boundingC.minLon = zipCode.lon - deltaLon;
-        if (boundingC.minLon < MIN_LON) boundingC.minLon += 2.0 * M_PI;
-        boundingC.maxLon = zipCode.lon + deltaLon;
-        if (boundingC.maxLon > MAX_LON) boundingC.maxLon -= 2.0 * M_PI;
-    } else {
-        // A pole is within the distance
-        boundingC.minLat = fmax(boundingC.minLat, MIN_LAT);
-        boundingC.maxLat = fmin(boundingC.maxLat, MAX_LAT);
-        boundingC.minLon = MIN_LON;
-        boundingC.maxLon = MAX_LON;
-    }
-}
-
-float CraftRankHandler::calculateDistance(float lat1, float lon1, float lat2, float lon2){
-    // Convert latitude and longitude values from degrees to radians
-    lat1 = lat1 * M_PI / 180.0;
-    lon1 = lon1 * M_PI / 180.0;
-    lat2 = lat2 * M_PI / 180.0;
-    lon2 = lon2 * M_PI / 180.0;
-
-    // Calculate the great circle distance using the provided formula
-    double deltaLon = lon1 - lon2;
-    double distance = acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(deltaLon)) * EARTH_RADIUS_KM;
-
-    return distance;
-}
-
+/**
 // Function to query a database and fill the ZipCodeInfo struct
 void CraftRankHandler::queryDatabase(ZipCodeInfo& zipCode, BoundingCoordinates& boundingC) {
     // Replace this with your actual database query logic
@@ -63,7 +25,7 @@ void CraftRankHandler::queryDatabase(ZipCodeInfo& zipCode, BoundingCoordinates& 
     computeBoundingCoordinates(zipCode, boundingC);
     std::cout << "Calculate distance" << calculateDistance(40.6892, -74.0444, 48.8583, 2.2945) << std::endl;
 
-}
+} */
 
 void CraftRankHandler::generateRelevantZipCodes(int startZip, std::vector<int> relevantZips) {
     std::unordered_set<int> visited;
@@ -101,19 +63,19 @@ void CraftRankHandler::getListOfWorkers(int zipCode) {
 }
 
 
-float rank(int zipCode, int workerId) {
+double rank(int zipCode, int workerId) {
     WorkerInfo workerInfo = db::getWorkerInfo(workerId);
     ZipCodeInfo zipCodeInfo = db::getZipInfo(zipCode);
 
-    auto adjustedMaxDriveDistance = static_cast<float>(workerInfo.maxDrivingDistance + zipCodeInfo.extraDistance);
-    float distance = distanceBetweenZipAndWorker(zipCode, workerId);
+    auto adjustedMaxDriveDistance = static_cast<double>(workerInfo.maxDrivingDistance + zipCodeInfo.extraDistance);
+    double distance = distanceBetweenZipAndWorker(zipCode, workerId);
 
     if (distance > adjustedMaxDriveDistance) {
         return -10;
     }
 
-    float distance_score = 1 - (distance / adjustedMaxDriveDistance);
-    float distance_weight = distance > 80 ? 0.01 : 0.15;
+    double distance_score = 1 - (distance / adjustedMaxDriveDistance);
+    double distance_weight = distance > 80 ? 0.01 : 0.15;
 
     return distance_weight * distance_score + (1 - distance_weight) * workerInfo.profileScore;
 }
@@ -144,7 +106,7 @@ void ParallelRank::process() {
         queue->pop_back();
         lock.unlock();
 
-        float rk = rank(baseZip, workerId);
+        double rk = rank(baseZip, workerId);
         if (rk > 0) {
             Result res{workerId, rk};
             safeWrite(res);
