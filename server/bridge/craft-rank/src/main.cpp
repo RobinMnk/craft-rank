@@ -16,15 +16,8 @@ void test() {
     std::cout << "maxLon: " << boundingCoordinates.maxLon << std::endl;
 }
 
-void handleZip(int zip) {
-
-
-}
-
 
 int main() {
-
-
-
+    std::cout << "Test #1" << std::endl;
     return 0;
 }

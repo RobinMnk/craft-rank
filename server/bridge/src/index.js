@@ -6,13 +6,15 @@ var app = express();
 
 app.set("port", process.env.PORT || 3000);
 
+exec("./src/CraftRank", (error, stdout, stderr) => {
+   console.log(error);
+   console.log(stdout);
+   console.log(stderr);
+});
+
 app.get('/', function (req, res) {
    res.writeHead(200, {'Content-Type': 'application/json'});
    var response = { "response" : "This is GET method." }
-
-   exec("./src/CraftRank", (error, stdout, stderr) => {
-      console.log(stdout);
-   });
 
    console.log(response);
    res.end(JSON.stringify(response));
