@@ -63,7 +63,7 @@ class ParallelRank {
     int baseZip;
     ResultList results;
 
-    void process();
+    [[noreturn]] void process();
 public:
     ParallelRank(int zip, IDList& q, ResultList& res);
 

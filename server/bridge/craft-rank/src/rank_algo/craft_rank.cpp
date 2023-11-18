@@ -1,22 +1,5 @@
 #include "craft_rank.h"
 
-/**
-// Function to query a database and fill the ZipCodeInfo struct
-void CraftRankHandler::queryDatabase(ZipCodeInfo& zipCode, BoundingCoordinates& boundingC) {
-    // Replace this with your actual database query logic
-    // For demonstration purposes, we'll set some example values.
-
-    // Example: Query extraDistance, latitude, longitude, and max_driving_dist from the database
-    zipCode.extraDistance = 0;
-    zipCode.lat = 1.3963; // Example latitude in radians
-    zipCode.lon = -0.6981; // Example longitude in radians
-    zipCode.distance = 1000;
-
-    computeBoundingCoordinates(zipCode, boundingC);
-    std::cout << "Calculate distance" << calculateDistance(40.6892, -74.0444, 48.8583, 2.2945) << std::endl;
-} */
-
-
 void CraftRankHandler::generateRelevantZipCodes(int startZip, IDList& relevantZips) {
     std::unordered_set<int> visited;
     relevantZips->clear();
@@ -51,14 +34,16 @@ bool compareResults(const Result& a, const Result& b) {
  * Main function for calculating the ranks of all relevant workers
  */
 void CraftRankHandler::generateRankedListOfWorkers(int zipCode, ResultList& res) {
-    // Obtain all zip codes that are close enough via BFS
     IDList relevantZips;
-    generateRelevantZipCodes(zipCode, relevantZips);
 
     // In Parallel: find all workers and calculate the ranks for every found zipcode
     ParallelRank pr(zipCode, relevantZips, res);
     std::thread t = pr.start();
+
+    // Obtain all zip codes that are close via BFS
+    generateRelevantZipCodes(zipCode, relevantZips);
     t.join();
+
 
     // all workers found and ranked -> now sort
     if (relevantZips->list.size() > 40) {
@@ -97,8 +82,8 @@ ParallelRank::ParallelRank(int zip, IDList& workerIds, ResultList& res) {
     results = res;
 }
 
-void ParallelRank::process() {
-    while (!queue->empty()) {
+[[noreturn]] void ParallelRank::process() {
+    while (true) {
         int zipcode = queue->get();
 
         std::vector<int> workers;
