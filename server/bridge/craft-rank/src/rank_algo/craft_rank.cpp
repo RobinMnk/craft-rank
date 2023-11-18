@@ -83,8 +83,8 @@ ParallelRank::ParallelRank(int zip, IDList& workerIds, ResultList& res) {
     results = res;
 }
 
-[[noreturn]] void ParallelRank::process() {
-    while (active) {
+void ParallelRank::process() {
+    while (active || !queue->empty()) {
         int zipcode = queue->get();
 
         std::vector<int> workers;
