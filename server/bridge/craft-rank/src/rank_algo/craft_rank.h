@@ -16,50 +16,76 @@ struct Result {
     double rank;
 };
 
-double distanceBetweenZips(int zipA, int zipB);
-double distanceBetweenZipAndWorker(int zip, int workerId);
+template<typename T>
+class ThreadSafeList {
+    std::mutex mtx;
+    std::condition_variable cv;
+public:
+    std::vector<T> list;
 
-double rank(int zipCode, int workerId);
+    void insert(T value) {
+        std::lock_guard<std::mutex> lock(mtx);
+        list.push_back(value);
+        cv.notify_one();
+    }
+
+    void clear() {
+        std::lock_guard<std::mutex> lock(mtx);
+        list.clear();
+        cv.notify_one();
+    }
+
+    T get() {
+        std::unique_lock<std::mutex> lock(mtx);
+        cv.wait(lock, [this] { return !list.empty(); });
+        T value = list.back();
+        list.pop_back();
+        lock.unlock();
+        return value;
+    }
+
+    bool empty() {
+        std::unique_lock<std::mutex> lock(mtx);
+        cv.wait(lock, [this] { return !list.empty(); });
+        bool isEmpty = list.empty();
+        list.pop_back();
+        lock.unlock();
+        return isEmpty;
+    }
+};
+
+using ResultList = std::shared_ptr<ThreadSafeList<Result>>;
+using IDList = std::shared_ptr<ThreadSafeList<int>>;
+
+
+class ParallelRank {
+    IDList queue;
+    int baseZip;
+    ResultList results;
+
+    void process();
+public:
+    ParallelRank(int zip, IDList& q, ResultList& res);
+
+    std::thread start();
+};
 
 
 class CraftRankHandler {
 public:
-
-    // Constructor
-    CraftRankHandler();
-
-    // Destructor
-    ~CraftRankHandler();
-
-    // Function to query a database and fill the ZipCodeInfo struct
-//    void queryDatabase(ZipCodeInfo& zipCode, BoundingCoordinates& boundingC);
-
-    static void getListOfWorkers(int zipCode);
+    static void generateRankedListOfWorkers(int zipCode, ResultList& res);
 
 private:
+    static double distanceBetweenZips(int zipA, int zipB);
 
-    static void generateRelevantZipCodes(int startingZip, std::vector<int> relevantZips);
+    static double distanceBetweenZipAndWorker(int zip, int workerId);
+
+    static double rank(int zipCode, int workerId);
+
+    static void generateRelevantZipCodes(int startingZip, IDList& relevantZips);
+
+    friend ParallelRank;
 };
 
-class ParallelRank {
-    std::shared_ptr<std::vector<int>> queue;
-
-    std::mutex mtx_queue, mtx_results;
-    std::condition_variable cv;
-
-    int baseZip;
-    std::shared_ptr<std::vector<Result>> results;
-public:
-    std::thread start();
-
-    void init(int zip, std::shared_ptr<std::vector<int>>& q, std::shared_ptr<std::vector<Result>>& res);
-
-    void insert(int value);
-
-    void process();
-
-private:
-    void safeWrite(Result res);
-};
 
 #endif // CRAFT_RANK_H

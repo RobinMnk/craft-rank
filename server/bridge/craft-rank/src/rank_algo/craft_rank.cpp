@@ -1,15 +1,5 @@
 #include "craft_rank.h"
 
-// Constructor
-CraftRankHandler::CraftRankHandler() {
-    // Initialize any necessary resources here
-}
-
-// Destructor
-CraftRankHandler::~CraftRankHandler() {
-    // Cleanup or release resources here, if needed
-}
-
 /**
 // Function to query a database and fill the ZipCodeInfo struct
 void CraftRankHandler::queryDatabase(ZipCodeInfo& zipCode, BoundingCoordinates& boundingC) {
@@ -24,18 +14,19 @@ void CraftRankHandler::queryDatabase(ZipCodeInfo& zipCode, BoundingCoordinates& 
 
     computeBoundingCoordinates(zipCode, boundingC);
     std::cout << "Calculate distance" << calculateDistance(40.6892, -74.0444, 48.8583, 2.2945) << std::endl;
+} */
 
-}
 
-void CraftRankHandler::generateRelevantZipCodes(int startZip, std::vector<int> relevantZips) {
+void CraftRankHandler::generateRelevantZipCodes(int startZip, IDList& relevantZips) {
     std::unordered_set<int> visited;
-    relevantZips.clear();
+    relevantZips->clear();
 
     std::queue<int> q{};
     q.push(startZip);
 
     std::vector<int> neighbors;
 
+    // Breadth-first search
     while(!q.empty()) {
         int currentZip = q.front();
         q.pop();
@@ -43,7 +34,7 @@ void CraftRankHandler::generateRelevantZipCodes(int startZip, std::vector<int> r
             continue;
         }
         visited.insert(currentZip);
-        relevantZips.push_back(currentZip);
+        relevantZips->insert(currentZip);
 
         db::getNeighboringZips(currentZip, neighbors);
         for(int nb: neighbors) {
@@ -52,23 +43,28 @@ void CraftRankHandler::generateRelevantZipCodes(int startZip, std::vector<int> r
     }
 }
 
-void CraftRankHandler::getListOfWorkers(int zipCode) {
-    std::vector<int> relevantZips;
+
+void CraftRankHandler::generateRankedListOfWorkers(int zipCode, ResultList& res) {
+    // Obtain all zip codes that are close enough via BFS
+    IDList relevantZips;
     generateRelevantZipCodes(zipCode, relevantZips);
 
-    std::vector<int> workers;
-    db::allWorkersForZips(relevantZips, workers);
+    ParallelRank pr(zipCode, relevantZips, res);
+    std::thread t = pr.start();
+    t.join();
 
-    // TODO: Give all workers to ParallelRank for ranking
+
+    // TODO: Give result list to QuickSelect
+//    std::nth_element(v.begin(), v.begin() + 1, v.end());
 }
 
 
-double rank(int zipCode, int workerId) {
+double CraftRankHandler::rank(int zipCode, int workerId) {
     WorkerInfo workerInfo = db::getWorkerInfo(workerId);
     ZipCodeInfo zipCodeInfo = db::getZipInfo(zipCode);
 
     auto adjustedMaxDriveDistance = static_cast<double>(workerInfo.maxDrivingDistance + zipCodeInfo.extraDistance);
-    double distance = distanceBetweenZipAndWorker(zipCode, workerId);
+    double distance = CraftRankHandler::distanceBetweenZipAndWorker(zipCode, workerId);
 
     if (distance > adjustedMaxDriveDistance) {
         return -10;
@@ -80,36 +76,25 @@ double rank(int zipCode, int workerId) {
     return distance_weight * distance_score + (1 - distance_weight) * workerInfo.profileScore;
 }
 
-
-void ParallelRank::init(int zip, std::shared_ptr<std::vector<int>>& workerIds, std::shared_ptr<std::vector<Result>>& res) {
+ParallelRank::ParallelRank(int zip, IDList& workerIds, ResultList& res) {
     baseZip = zip;
     queue = workerIds;
     results = res;
 }
 
-void ParallelRank::insert(int value) {
-    std::lock_guard<std::mutex> lock(mtx_queue);
-    queue->push_back(value);
-    cv.notify_one();
-}
-
-void ParallelRank::safeWrite(Result res) {
-    std::lock_guard<std::mutex> lock(mtx_results);
-    results->push_back(res);
-}
-
 void ParallelRank::process() {
     while (!queue->empty()) {
-        std::unique_lock<std::mutex> lock(mtx_queue);
-        cv.wait(lock, [this] { return !queue->empty(); });
-        int workerId = queue->back();
-        queue->pop_back();
-        lock.unlock();
+        int zipcode = queue->get();
 
-        double rk = rank(baseZip, workerId);
-        if (rk > 0) {
-            Result res{workerId, rk};
-            safeWrite(res);
+        std::vector<int> workers;
+        db::allWorkersForSingleZip(zipcode, workers);
+
+        for(int workerId: workers) {
+            double rk = CraftRankHandler::rank(baseZip, workerId);
+            if (rk > 0) {
+                Result res{workerId, rk};
+                results->insert(res);
+            }
         }
     }
 }
@@ -118,8 +103,3 @@ std::thread ParallelRank::start() {
     std::thread t(&ParallelRank::process, this);
     return t;
 }
-
-*/
-
-
-

@@ -10,6 +10,8 @@ namespace db {
 
     void allWorkersForZips(const std::vector<int>& zips, const std::vector<int>& workers);
 
+    void allWorkersForSingleZip(int zip, const std::vector<int>& workers);
+
     double queryDatabaseForDistance(const std::string& zipCode1, const std::string& zipCode2);
 
     int Callback(void* data, int argc, char** argv, char** colNames);

@@ -6,24 +6,9 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/ostreamwrapper.h"
 
-void test() {
-    CraftRankHandler craftRankHandler;
-    ZipCodeInfo zipCode;
-    BoundingCoordinates boundingCoordinates;
-
-//    craftRankHandler.queryDatabase(zipCode, boundingCoordinates);
-
-    std::cout << "minLat: " << boundingCoordinates.minLat << std::endl;
-    std::cout << "maxLat: " << boundingCoordinates.maxLat << std::endl;
-    std::cout << "minLon: " << boundingCoordinates.minLon << std::endl;
-    std::cout << "maxLon: " << boundingCoordinates.maxLon << std::endl;
-}
-
-
 void writeResultsToStdout(std::shared_ptr<std::vector<Result>>& res) {
     rapidjson::Document d;
     d.SetObject();
-    char* buffer = new char[2048];
 
     for(auto entry: *res) {
         // Add data to the JSON document
@@ -37,9 +22,24 @@ void writeResultsToStdout(std::shared_ptr<std::vector<Result>>& res) {
     d.Accept(writer);
 }
 
+void handleFindAllCraftsmen(int zipcode) {
+    ResultList results;
+
+    CraftRankHandler::generateRankedListOfWorkers(zipcode, results);
+
+}
 
 
-int main() {
-    std::cout << "Test #3" << std::endl;
-    return 0;
+int main(int argc, char** argv) {
+//    std::cout << "Test #3" << std::endl;
+
+    if(argc == 2) {
+        int zipcode = std::atoi(argv[1]);
+        handleFindAllCraftsmen(zipcode);
+        return 0;
+    }
+    else {
+        std::cerr << "Usage: ./CraftRank <zipcode>" << std::endl;
+        return 1;
+    }
 }
