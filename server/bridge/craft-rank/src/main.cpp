@@ -6,11 +6,11 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/ostreamwrapper.h"
 
-void writeResultsToStdout(std::shared_ptr<std::vector<Result>>& res) {
+void writeResultsToStdout(ResultList& res) {
     rapidjson::Document d;
     d.SetObject();
 
-    for(auto entry: *res) {
+    for(auto entry: res->list) {
         // Add data to the JSON document
         d.AddMember("id", entry.workerId, d.GetAllocator());
 //      TODO:  d.AddMember("name", entry.name, d.GetAllocator());
@@ -24,9 +24,8 @@ void writeResultsToStdout(std::shared_ptr<std::vector<Result>>& res) {
 
 void handleFindAllCraftsmen(int zipcode) {
     ResultList results;
-
     CraftRankHandler::generateRankedListOfWorkers(zipcode, results);
-
+    writeResultsToStdout(results);
 }
 
 

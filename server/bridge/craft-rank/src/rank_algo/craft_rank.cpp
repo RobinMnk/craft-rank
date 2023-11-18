@@ -43,19 +43,33 @@ void CraftRankHandler::generateRelevantZipCodes(int startZip, IDList& relevantZi
     }
 }
 
+bool compareResults(const Result& a, const Result& b) {
+    return a.rank > b.rank;
+}
 
+/**
+ * Main function for calculating the ranks of all relevant workers
+ */
 void CraftRankHandler::generateRankedListOfWorkers(int zipCode, ResultList& res) {
     // Obtain all zip codes that are close enough via BFS
     IDList relevantZips;
     generateRelevantZipCodes(zipCode, relevantZips);
 
+    // In Parallel: find all workers and calculate the ranks for every found zipcode
     ParallelRank pr(zipCode, relevantZips, res);
     std::thread t = pr.start();
     t.join();
 
-
-    // TODO: Give result list to QuickSelect
-//    std::nth_element(v.begin(), v.begin() + 1, v.end());
+    // all workers found and ranked -> now sort
+    if (relevantZips->list.size() > 40) {
+        // QuickSelect 20 times to make first 20 entries sorted
+        for(int i{0}; i < 20; i++) {
+            std::nth_element(res->list.begin() + i, res->list.begin() + i + 1, res->list.end(), compareResults);
+        }
+    } else {
+        // List not long enough -> sorting is quicker
+        std::sort(res->list.begin(), res->list.end(), compareResults);
+    }
 }
 
 
@@ -67,6 +81,7 @@ double CraftRankHandler::rank(int zipCode, int workerId) {
     double distance = CraftRankHandler::distanceBetweenZipAndWorker(zipCode, workerId);
 
     if (distance > adjustedMaxDriveDistance) {
+        // worker would not drive here, return negative number and sort out
         return -10;
     }
 
