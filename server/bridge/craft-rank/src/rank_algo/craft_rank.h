@@ -35,6 +35,10 @@ public:
         cv.notify_one();
     }
 
+    void notify() {
+        cv.notify_all();
+    }
+
     T get() {
         std::unique_lock<std::mutex> lock(mtx);
         cv.wait(lock, [this] { return !list.empty(); });
@@ -59,15 +63,18 @@ using IDList = std::shared_ptr<ThreadSafeList<int>>;
 
 
 class ParallelRank {
+    ResultList results;
     IDList queue;
     int baseZip;
-    ResultList results;
+    bool active{true};
 
     [[noreturn]] void process();
 public:
     ParallelRank(int zip, IDList& q, ResultList& res);
 
     std::thread start();
+
+    void stop();
 };
 
 

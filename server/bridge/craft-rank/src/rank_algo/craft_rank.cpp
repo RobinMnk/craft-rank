@@ -42,6 +42,7 @@ void CraftRankHandler::generateRankedListOfWorkers(int zipCode, ResultList& res)
 
     // Obtain all zip codes that are close via BFS
     generateRelevantZipCodes(zipCode, relevantZips);
+    pr.stop();
     t.join();
 
 
@@ -83,7 +84,7 @@ ParallelRank::ParallelRank(int zip, IDList& workerIds, ResultList& res) {
 }
 
 [[noreturn]] void ParallelRank::process() {
-    while (true) {
+    while (active) {
         int zipcode = queue->get();
 
         std::vector<int> workers;
@@ -102,4 +103,9 @@ ParallelRank::ParallelRank(int zip, IDList& workerIds, ResultList& res) {
 std::thread ParallelRank::start() {
     std::thread t(&ParallelRank::process, this);
     return t;
+}
+
+void ParallelRank::stop() {
+    active = false;
+    queue->notify();
 }
