@@ -84,10 +84,6 @@ public:
     static void generateRankedListOfWorkers(int zipCode, ResultList& res);
 
 private:
-    static double distanceBetweenZips(int zipA, int zipB);
-
-    static double distanceBetweenZipAndWorker(int zip, int workerId);
-
     static double rank(int zipCode, int workerId);
 
     static void generateRelevantZipCodes(int startingZip, IDList& relevantZips);
