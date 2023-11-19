@@ -26,7 +26,7 @@ namespace db {
         return 0;
     }
 
-    double queryDatabaseForDistance(int zipCode1, int zipCode2)
+    double distanceBetweenZips(int zipCode1, int zipCode2)
     {
         sqlite3 *db;
         const char* dbShortName = "check24-profis.db";
@@ -131,7 +131,7 @@ namespace db {
         sqlite3_close(db);   
     }
 
-    void allWorkersForZips(const std::vector<int>& zips, std::vector<int>& workers){
+    void allWorkersForSingleZipcode(int zipcode, std::vector<int>& workers) {
         sqlite3 *db;
         const char* dbShortName = "check24-profis.db";
         const char* homeDir = getenv("HOME");
@@ -140,16 +140,20 @@ namespace db {
         int width = 5;
         std::ostringstream oss;
 
-        std::string query = "SELECT id FROM service_provider_profile WHERE postcode IN (";
-        for (int i = 0; i < zips.size(); i++) {
-            oss << std::setw(width) << std::setfill('0') << zips[i];
-            query += "'" + oss.str() + "'";  
-            if (i < zips.size() - 1) {
-                query += ", ";
-            }
-            oss.str("");
-        }
-        query += ");";
+//        std::string query = "SELECT id FROM service_provider_profile WHERE postcode IN (";
+//        for (int i = 0; i < zips.size(); i++) {
+//            oss << std::setw(width) << std::setfill('0') << zips[i];
+//            query += "'" + oss.str() + "'";
+//            if (i < zips.size() - 1) {
+//                query += ", ";
+//            }
+//            oss.str("");
+//        }
+
+        std::string query = "SELECT id FROM service_provider_profile WHERE postcode=";
+        oss << std::setw(width) << std::setfill('0') << zipcode;
+        query += "'" + oss.str() + "'";
+        query += "');";
         const char *queryStr = query.c_str();
 
         int rc = sqlite3_open_v2(dbName, &db, SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_READWRITE ,nullptr);

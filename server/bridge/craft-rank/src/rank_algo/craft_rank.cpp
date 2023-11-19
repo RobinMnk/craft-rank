@@ -13,7 +13,7 @@ void CraftRankHandler::generateRelevantZipCodes(int startZip, IDList& relevantZi
     while(!q.empty()) {
         int currentZip = q.front();
         q.pop();
-        if(visited.contains(currentZip) || distanceBetweenZips(startZip, currentZip) > MAX_ZIP_DISTANCE) {
+        if(visited.contains(currentZip) || db::distanceBetweenZips(startZip, currentZip) > MAX_ZIP_DISTANCE) {
             continue;
         }
         visited.insert(currentZip);
@@ -66,7 +66,7 @@ double CraftRankHandler::rank(int zipCode, int workerId) {
     db::getZipInfo(zipCode, zipCodeInfo);
 
     auto adjustedMaxDriveDistance = static_cast<double>(workerInfo.maxDrivingDistance + zipCodeInfo.extraDistance);
-    double distance = CraftRankHandler::distanceBetweenZipAndWorker(zipCode, workerId);
+    double distance = distanceBetweenZipAndWorker(zipCodeInfo, workerInfo);
 
     if (distance > adjustedMaxDriveDistance) {
         // worker would not drive here, return negative number and sort out
@@ -90,7 +90,7 @@ void ParallelRank::process() {
         int zipcode = queue->get();
 
         std::vector<int> workers;
-        db::allWorkersForSingleZip(zipcode, workers);
+        db::allWorkersForSingleZipcode(zipcode, workers);
 
         for(int workerId: workers) {
             double rk = CraftRankHandler::rank(baseZip, workerId);

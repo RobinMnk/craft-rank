@@ -1,7 +1,7 @@
 # Define the library target
 add_library(rank_algo craft_rank.cpp craft_rank.h core.h core.cpp)
 
-
+target_link_libraries(rank_algo PUBLIC db_reader)
 target_compile_options(rank_algo PUBLIC -O3)
 target_link_libraries(rank_algo PUBLIC db_reader)
 
