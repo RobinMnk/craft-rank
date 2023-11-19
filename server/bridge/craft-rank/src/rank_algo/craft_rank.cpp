@@ -74,7 +74,7 @@ double CraftRankHandler::rank(int zipCode, int workerId) {
     }
 
     double distance_score = 1 - (distance / adjustedMaxDriveDistance);
-    double distance_weight = distance > 80 ? 0.01 : 0.15;
+    double distance_weight = distance > 80000 ? 0.01 : 0.15;
 
     return distance_weight * distance_score + (1 - distance_weight) * workerInfo.profileScore;
 }

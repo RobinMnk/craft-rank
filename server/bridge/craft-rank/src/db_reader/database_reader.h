@@ -1,5 +1,6 @@
 #include "../rank_algo/core.h"
 #include <iostream>
+#include <sqlite3.h>
 
 #ifndef CRAFTRANK_DATABASE_READER_H
 #define CRAFTRANK_DATABASE_READER_H

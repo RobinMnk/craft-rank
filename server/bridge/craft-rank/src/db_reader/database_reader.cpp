@@ -230,9 +230,9 @@ namespace db {
                 if (group == "group_a") {
                     zipInfo.extraDistance = 0;
                 } else if (group == "group_b") {
-                    zipInfo.extraDistance = 2;
+                    zipInfo.extraDistance = 2000;
                 } else if (group == "group_c") {
-                    zipInfo.extraDistance = 5;
+                    zipInfo.extraDistance = 5000;
                 } else {
                     // Handle the case when group is something other than the expected values
                 }

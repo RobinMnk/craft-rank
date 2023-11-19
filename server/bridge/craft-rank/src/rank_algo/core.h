@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-const int EARTH_RADIUS_KM = 6371;
+const int EARTH_RADIUS_KM = 6371000;
 const double MIN_LAT = -M_PI / 2.0f;
 const double MAX_LAT = M_PI / 2.0f;
 const double MIN_LON = -M_PI;

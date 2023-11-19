@@ -10,7 +10,7 @@
 #include <queue>
 #include <algorithm>
 
-const double MAX_ZIP_DISTANCE = 200; // TODO: anpassen!
+const double MAX_ZIP_DISTANCE = 99000;
 
 struct Result {
     int workerId;
