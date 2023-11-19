@@ -8,6 +8,7 @@
 #include <condition_variable>
 #include <iostream>
 #include <queue>
+#include <algorithm>
 
 const double MAX_ZIP_DISTANCE = 200; // TODO: anpassen!
 
