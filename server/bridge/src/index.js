@@ -38,7 +38,7 @@ app.patch('/craftman/:id', function (req, res) {
       unique_id, maxDrivingDistance, profilePictureScore, profileDescriptionScore
    } + "." }
 
-   // TODO: Call CraftRank with parameters
+   // TODO: Update database
 
    console.log(response);
    res.end(JSON.stringify(response));
