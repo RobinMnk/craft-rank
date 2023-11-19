@@ -45,14 +45,14 @@ void CraftRankHandler::generateRankedListOfWorkers(int zipCode, ResultList& res)
     // In Parallel: find all workers and calculate the ranks for every found zipcode
     ParallelRank pr(zipCode, relevantZips, res);
     std::thread t = pr.start();
-//    std::thread t2 = pr.start();
+    std::thread t2 = pr.start();
 
     // Obtain all zip codes that are close via BFS
     generateRelevantZipCodes(zipCode, relevantZips);
 
     pr.stop();
     t.join();
-//    t2.join();
+    t2.join();
 
 
     // all workers found and ranked -> now sort
@@ -121,4 +121,5 @@ std::thread ParallelRank::start() {
 void ParallelRank::stop() {
     active = false;
     queue->notify();
+    results->notify();
 }
