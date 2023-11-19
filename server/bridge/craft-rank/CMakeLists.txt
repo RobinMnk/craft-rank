@@ -10,3 +10,4 @@ add_executable(CraftRank src/main.cpp)
 # Link libraries
 target_link_libraries(CraftRank db_reader rank_algo)
 target_compile_options(CraftRank PUBLIC -Wall -Wextra)
+target_compile_options(CraftRank PUBLIC -O3)

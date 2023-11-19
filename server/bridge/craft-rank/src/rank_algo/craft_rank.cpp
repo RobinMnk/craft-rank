@@ -2,8 +2,6 @@
 
 void CraftRankHandler::generateRelevantZipCodes(int startZip, IDList& relevantZips) {
     std::unordered_set<int> visited;
-    relevantZips->clear();
-
     std::queue<int> q{};
     q.push(startZip);
 
@@ -11,11 +9,25 @@ void CraftRankHandler::generateRelevantZipCodes(int startZip, IDList& relevantZi
 
     // Breadth-first search
     while(!q.empty()) {
+
         int currentZip = q.front();
         q.pop();
-        if(visited.contains(currentZip) || db::distanceBetweenZips(startZip, currentZip) > MAX_ZIP_DISTANCE) {
+
+        if (visited.size() % 300 == 0) {
+            std::cout << visited.size() << std::endl;
+        }
+
+        if(visited.contains(currentZip)) {
             continue;
         }
+
+        double distance = db::distanceBetweenZips(startZip, currentZip);
+
+
+        if(distance > MAX_ZIP_DISTANCE) {
+            continue;
+        }
+
         visited.insert(currentZip);
         relevantZips->insert(currentZip);
 
@@ -34,7 +46,7 @@ bool compareResults(const Result& a, const Result& b) {
  * Main function for calculating the ranks of all relevant workers
  */
 void CraftRankHandler::generateRankedListOfWorkers(int zipCode, ResultList& res) {
-    IDList relevantZips;
+    IDList relevantZips = std::make_shared<ThreadSafeList<int>>();
 
     // In Parallel: find all workers and calculate the ranks for every found zipcode
     ParallelRank pr(zipCode, relevantZips, res);
@@ -42,6 +54,7 @@ void CraftRankHandler::generateRankedListOfWorkers(int zipCode, ResultList& res)
 
     // Obtain all zip codes that are close via BFS
     generateRelevantZipCodes(zipCode, relevantZips);
+
     pr.stop();
     t.join();
 
@@ -91,6 +104,9 @@ void ParallelRank::process() {
 
         std::vector<int> workers;
         db::allWorkersForSingleZipcode(zipcode, workers);
+
+
+//        std::cout << "Processing Zip " << zipcode << "(" << queue->list.size() << " remaining) " << std::endl;
 
         for(int workerId: workers) {
             double rk = CraftRankHandler::rank(baseZip, workerId);

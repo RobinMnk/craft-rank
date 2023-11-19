@@ -16,9 +16,9 @@ void writeResultsToStdout(ResultList& res) {
     for(auto entry: res->list) {
         rapidjson::Value objValue;
         objValue.SetObject();
-        d.AddMember("id", entry.workerId, allocator);
+        objValue.AddMember("id", entry.workerId, allocator);
 //      TODO:  d.AddMember("name", entry.name, d.GetAllocator());
-        d.AddMember("rankingScore", entry.rank, allocator);
+        objValue.AddMember("rankingScore", entry.rank, allocator);
 
         myArray.PushBack(objValue, allocator);
     }
@@ -30,14 +30,19 @@ void writeResultsToStdout(ResultList& res) {
 }
 
 void handleFindAllCraftsmen(int zipcode) {
-    ResultList results;
+    ResultList results = std::make_shared<ThreadSafeList<Result>>();;
+//    std::cout << "Checking for Zip code: " << zipcode << std::endl;
     CraftRankHandler::generateRankedListOfWorkers(zipcode, results);
+//    std::cout << "Number of entries: " << results->list.size() << std::endl;
     writeResultsToStdout(results);
 }
 
 
 int main(int argc, char** argv) {
 //    std::cout << "Test #3" << std::endl;
+
+//    db::distanceBetweenZips(1067, 1069);
+
 
     if(argc == 2) {
         int zipcode = std::stoi(argv[1]);

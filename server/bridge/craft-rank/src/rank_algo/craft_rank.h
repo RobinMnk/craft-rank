@@ -10,7 +10,7 @@
 #include <queue>
 #include <algorithm>
 
-const double MAX_ZIP_DISTANCE = 200'000;
+const double MAX_ZIP_DISTANCE = 25'000;
 
 struct Result {
     int workerId;
@@ -19,10 +19,10 @@ struct Result {
 
 template<typename T>
 class ThreadSafeList {
-    std::mutex mtx;
-    std::condition_variable cv;
+    std::mutex mtx{};
+    std::condition_variable cv{};
 public:
-    std::vector<T> list;
+    std::vector<T> list{};
 
     void insert(T value) {
         std::lock_guard<std::mutex> lock(mtx);
@@ -50,12 +50,13 @@ public:
     }
 
     bool empty() {
-        std::unique_lock<std::mutex> lock(mtx);
-        cv.wait(lock, [this] { return !list.empty(); });
-        bool isEmpty = list.empty();
-        list.pop_back();
-        lock.unlock();
-        return isEmpty;
+        return list.empty();
+//        std::unique_lock<std::mutex> lock(mtx);
+//        cv.wait(lock, [this] { return !list.empty(); });
+//        bool isEmpty = list.empty();
+//        list.pop_back();
+//        lock.unlock();
+//        return isEmpty;
     }
 };
 
@@ -69,13 +70,14 @@ class ParallelRank {
     int baseZip;
     bool active{true};
 
-    void process();
 public:
     ParallelRank(int zip, IDList& q, ResultList& res);
 
     std::thread start();
 
     void stop();
+
+    void process();
 };
 
 

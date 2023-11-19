@@ -8,8 +8,8 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  database:
-    build: ./database
+  # database:
+  #   build: ./database
   bridge:
     build: ./bridge
     environment:

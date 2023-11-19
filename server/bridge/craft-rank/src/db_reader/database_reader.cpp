@@ -26,12 +26,14 @@ namespace db {
         return 0;
     }
 
-    double distanceBetweenZips(int zipCode1, int zipCode2)
-    {
+    double distanceBetweenZips(int zipCode1, int zipCode2) {
+        if (zipCode1 == zipCode2) {
+            return 0;
+        }
         sqlite3 *db;
         const char* dbShortName = "check24-profis.db";
         const char* homeDir = getenv("HOME");
-        std::string dbFilePath = std::string(homeDir) + "/craft-rank/server/database/" + std::string(dbShortName);
+        std::string dbFilePath = "/usr/src/app/database/" + std::string(dbShortName);
         const char *dbName = dbFilePath.c_str();
         int width = 5;
         std::ostringstream oss;
@@ -45,9 +47,8 @@ namespace db {
 
         int rc = sqlite3_open_v2(dbName, &db, SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_READWRITE ,nullptr);
 
-        if (rc)
-        {
-            std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
+        if (rc) {
+            std::cerr << "Can't open database (" << rc << "):" << sqlite3_errmsg(db) << std::endl;
             sqlite3_close(db);
             throw std::runtime_error("Can't open database");
         }
@@ -66,10 +67,10 @@ namespace db {
         sqlite3_close(db);
 
         // Calculate the distance
-        double distance = calculateDistance(latLonList[0].lat, latLonList[0].lon, latLonList[1].lat, latLonList[1].lat);
+        double distance = calculateDistance(latLonList[0].lat, latLonList[0].lon, latLonList[1].lat, latLonList[1].lon);
 
         // Output the calculated distance
-        std::cout << "Distance between the two zip codes: " << distance << " kilometers" << std::endl;
+//        std::cout << "Distance between the two zip codes: " << distance << " kilometers" << std::endl;
 
         return distance;
     }
@@ -78,12 +79,12 @@ namespace db {
         sqlite3 *db;
         const char* dbShortName = "check24-profis.db";
         const char* homeDir = getenv("HOME");
-        std::string dbFilePath = std::string(homeDir) + "/craft-rank/server/database/" + std::string(dbShortName);
+        std::string dbFilePath = "/usr/src/app/database/" + std::string(dbShortName);
         const char *dbName = dbFilePath.c_str();
         int width = 5;
         std::ostringstream oss;
         oss << std::setw(width) << std::setfill('0') << zipCode;
-        std::string numStr = oss.str();  
+        std::string numStr = oss.str();
 
         std::string query = "SELECT neighbours FROM postcode WHERE postcode='" + numStr + "';";
         const char *queryStr = query.c_str();
@@ -128,14 +129,14 @@ namespace db {
 
         // Finalize the statement and close the database
         sqlite3_finalize(stmt);
-        sqlite3_close(db);   
+        sqlite3_close(db);
     }
 
     void allWorkersForSingleZipcode(int zipcode, std::vector<int>& workers) {
         sqlite3 *db;
         const char* dbShortName = "check24-profis.db";
         const char* homeDir = getenv("HOME");
-        std::string dbFilePath = std::string(homeDir) + "/craft-rank/server/database/" + std::string(dbShortName);
+        std::string dbFilePath = "/usr/src/app/database/" + std::string(dbShortName);
         const char *dbName = dbFilePath.c_str();
         int width = 5;
         std::ostringstream oss;
@@ -153,7 +154,7 @@ namespace db {
         std::string query = "SELECT id FROM service_provider_profile WHERE postcode=";
         oss << std::setw(width) << std::setfill('0') << zipcode;
         query += "'" + oss.str() + "'";
-        query += "');";
+        query += ";";
         const char *queryStr = query.c_str();
 
         int rc = sqlite3_open_v2(dbName, &db, SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_READWRITE ,nullptr);
@@ -192,14 +193,14 @@ namespace db {
         sqlite3 *db;
         const char* dbShortName = "check24-profis.db";
         const char* homeDir = getenv("HOME");
-        std::string dbFilePath = std::string(homeDir) + "/craft-rank/server/database/" + std::string(dbShortName);
+        std::string dbFilePath = "/usr/src/app/database/" + std::string(dbShortName);
         const char *dbName = dbFilePath.c_str();
 
         int width = 5;
         std::ostringstream oss;
         oss << std::setw(width) << std::setfill('0') << zipCode;
-        std::string numStr = oss.str();  
-        std::cout << "Zip Code: " << numStr << std::endl;
+        std::string numStr = oss.str();
+//        std::cout << "Zip Code: " << numStr << std::endl;
         std::string query = "SELECT lon, lat, postcode_extension_distance_group FROM postcode WHERE postcode='" + numStr + "';";
         const char *queryStr = query.c_str();
 
@@ -254,7 +255,7 @@ namespace db {
         sqlite3 *db;
         const char* dbShortName = "check24-profis.db";
         const char* homeDir = getenv("HOME");
-        std::string dbFilePath = std::string(homeDir) + "/craft-rank/server/database/" + std::string(dbShortName);
+        std::string dbFilePath = "/usr/src/app/database/" + std::string(dbShortName);
         const char *dbName = dbFilePath.c_str();
 
         int rc = sqlite3_open_v2(dbName, &db, SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_READWRITE, nullptr);

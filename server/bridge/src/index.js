@@ -6,9 +6,9 @@ var app = express();
 
 app.set("port", process.env.PORT || 3000);
 
-exec("./src/CraftRank", (error, stdout, stderr) => {
-   console.log(stdout);
-});
+// exec("./src/CraftRank", (error, stdout, stderr) => {
+//    console.log(stdout);
+// });
 
 app.get('/craftsmen/', function (req, res) {
    const { query } = req;
@@ -17,10 +17,11 @@ app.get('/craftsmen/', function (req, res) {
 
    // Call CraftRank with postalcode
    exec(`./src/CraftRank ${postalcode}`, (error, stdout, stderr) => {
+      console.error(error);
       console.log(stdout);
 
       res.writeHead(200, {'Content-Type': 'application/json'});
-      var response = { "craftsmen" : stdout }
+      var response = { "craftsmen" : JSON.parse(stdout.substring(2)) }
    
       console.log(response);
       res.end(JSON.stringify(response));
