@@ -9,13 +9,11 @@ namespace db {
 
     void getNeighboringZips(int zipCode, std::vector<int>& neighbors);
 
-    void allWorkersForZips(const std::vector<int>& zips, std::vector<int>& workers);
+//    void allWorkersForZips(const std::vector<int>& zips, std::vector<int>& workers);
 
-    void allWorkersForSingleZip(int zip, const std::vector<int>& workers);
+    void allWorkersForSingleZipcode(int zip, std::vector<int>& workers);
 
     double distanceBetweenZips(int zipCode1, int zipCode2);
-
-    double distanceBetweenZipAndWorker(int zipCode, int workerId);
 
     int Callback(void* data, int argc, char** argv, char** colNames);
 

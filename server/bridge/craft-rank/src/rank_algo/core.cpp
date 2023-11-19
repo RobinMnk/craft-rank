@@ -38,3 +38,7 @@ double calculateDistance(double lat1, double lon1, double lat2, double lon2){
 
     return distance;
 }
+
+double distanceBetweenZipAndWorker(ZipCodeInfo& zipInfo, WorkerInfo& workerInfo) {
+    return calculateDistance(zipInfo.lat, zipInfo.lon, workerInfo.lat, workerInfo.lon);
+}
