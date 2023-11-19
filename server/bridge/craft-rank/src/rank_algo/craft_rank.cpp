@@ -9,20 +9,14 @@ void CraftRankHandler::generateRelevantZipCodes(int startZip, IDList& relevantZi
 
     // Breadth-first search
     while(!q.empty()) {
-
         int currentZip = q.front();
         q.pop();
-
-        if (visited.size() % 300 == 0) {
-            std::cout << visited.size() << std::endl;
-        }
 
         if(visited.contains(currentZip)) {
             continue;
         }
 
         double distance = db::distanceBetweenZips(startZip, currentZip);
-
 
         if(distance > MAX_ZIP_DISTANCE) {
             continue;
@@ -51,12 +45,14 @@ void CraftRankHandler::generateRankedListOfWorkers(int zipCode, ResultList& res)
     // In Parallel: find all workers and calculate the ranks for every found zipcode
     ParallelRank pr(zipCode, relevantZips, res);
     std::thread t = pr.start();
+//    std::thread t2 = pr.start();
 
     // Obtain all zip codes that are close via BFS
     generateRelevantZipCodes(zipCode, relevantZips);
 
     pr.stop();
     t.join();
+//    t2.join();
 
 
     // all workers found and ranked -> now sort
@@ -104,7 +100,6 @@ void ParallelRank::process() {
 
         std::vector<int> workers;
         db::allWorkersForSingleZipcode(zipcode, workers);
-
 
 //        std::cout << "Processing Zip " << zipcode << "(" << queue->list.size() << " remaining) " << std::endl;
 

@@ -10,7 +10,7 @@
 #include <queue>
 #include <algorithm>
 
-const double MAX_ZIP_DISTANCE = 25'000;
+const double MAX_ZIP_DISTANCE = 20'000;
 
 struct Result {
     int workerId;
@@ -27,13 +27,7 @@ public:
     void insert(T value) {
         std::lock_guard<std::mutex> lock(mtx);
         list.push_back(value);
-        cv.notify_one();
-    }
-
-    void clear() {
-        std::lock_guard<std::mutex> lock(mtx);
-        list.clear();
-        cv.notify_one();
+        cv.notify_all();
     }
 
     void notify() {
@@ -54,7 +48,6 @@ public:
 //        std::unique_lock<std::mutex> lock(mtx);
 //        cv.wait(lock, [this] { return !list.empty(); });
 //        bool isEmpty = list.empty();
-//        list.pop_back();
 //        lock.unlock();
 //        return isEmpty;
     }

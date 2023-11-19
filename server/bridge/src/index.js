@@ -18,12 +18,10 @@ app.get('/craftsmen/', function (req, res) {
    // Call CraftRank with postalcode
    exec(`./src/CraftRank ${postalcode}`, (error, stdout, stderr) => {
       console.error(error);
-      console.log(stdout);
 
       res.writeHead(200, {'Content-Type': 'application/json'});
-      var response = { "craftsmen" : JSON.parse(stdout.substring(2)) }
+      var response = JSON.parse(stdout);
    
-      console.log(response);
       res.end(JSON.stringify(response));
    });
 
