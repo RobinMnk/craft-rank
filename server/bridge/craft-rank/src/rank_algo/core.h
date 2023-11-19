@@ -26,7 +26,6 @@ struct ZipCodeInfo {
     int extraDistance{0};
     double lat{0}; // Latitude in radians
     double lon{0}; // Longitude in radians
-    int distance{40}; // Neighbour distance
 };
 
 struct LatLon {
@@ -42,8 +41,8 @@ struct WorkerInfo {
 };
 
 
-// helper function to compute latmin and latmax
-void computeBoundingCoordinates(const ZipCodeInfo& zipCode, BoundingCoordinates& boundingC);
+// // helper function to compute latmin and latmax
+// void computeBoundingCoordinates(const ZipCodeInfo& zipCode, BoundingCoordinates& boundingC);
 
 double calculateDistance(double lat1, double lon1, double lat2, double lon2);
 

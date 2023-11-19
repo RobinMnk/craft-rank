@@ -6,9 +6,9 @@
 
 namespace db {
 
-    void getNeighboringZips(int zipCode, const std::vector<int>& neighbors);
+    void getNeighboringZips(int zipCode, std::vector<int>& neighbors);
 
-    void allWorkersForZips(const std::vector<int>& zips, const std::vector<int>& workers);
+    void allWorkersForZips(const std::vector<int>& zips, std::vector<int>& workers);
 
     void allWorkersForSingleZip(int zip, const std::vector<int>& workers);
 
@@ -16,9 +16,9 @@ namespace db {
 
     int Callback(void* data, int argc, char** argv, char** colNames);
 
-    ZipCodeInfo getZipInfo(int zipCode);
+    void getZipInfo(int zipCode, ZipCodeInfo& zipCodeInfo);
 
-    WorkerInfo getWorkerInfo(int workerId);
+    void getWorkerInfo(int workerId, WorkerInfo& workerInfo);
 
 }
 
