@@ -32,7 +32,7 @@ public:
     ~CraftRankHandler();
 
     // Function to query a database and fill the ZipCodeInfo struct
-    void queryDatabase(ZipCodeInfo& zipCode, BoundingCoordinates& boundingC);
+//    void queryDatabase(ZipCodeInfo& zipCode, BoundingCoordinates& boundingC);
 
     static void getListOfWorkers(int zipCode);
 

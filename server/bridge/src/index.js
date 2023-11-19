@@ -6,45 +6,43 @@ var app = express();
 
 app.set("port", process.env.PORT || 3000);
 
-app.get('/', function (req, res) {
-   res.writeHead(200, {'Content-Type': 'application/json'});
-   var response = { "response" : "This is GET method." }
+exec("./src/CraftRank", (error, stdout, stderr) => {
+   console.log(stdout);
+});
 
-   exec("./src/CraftRank", (error, stdout, stderr) => {
+app.get('/craftsmen/', function (req, res) {
+   const { query } = req;
+   const { postalcode } = query;
+   console.log("Request: ", query);
+
+   // Call CraftRank with postalcode
+   exec(`./src/CraftRank ${postalcode}`, (error, stdout, stderr) => {
       console.log(stdout);
+
+      res.writeHead(200, {'Content-Type': 'application/json'});
+      var response = { "craftsmen" : stdout }
+   
+      console.log(response);
+      res.end(JSON.stringify(response));
    });
 
-   console.log(response);
-   res.end(JSON.stringify(response));
 })
 
-app.get('/:id', function (req, res) {
+app.patch('/craftman/:id', function (req, res) {
    res.writeHead(200, {'Content-Type': 'application/json'});
-   var response = { "response" : "This is GET method with id=" + req.params.id + "." }
-   console.log(response);
-   res.end(JSON.stringify(response));
-})
 
-app.post('/', function (req, res) {
-   res.writeHead(200, {'Content-Type': 'application/json'});
-   var response = { "response" : "This is POST method." }
-   console.log(response);
-   res.end(JSON.stringify(response));
-})
+   const unique_id = req.params.id;
+   const { maxDrivingDistance, profilePictureScore, profileDescriptionScore } = req.query;
 
-app.put('/', function (req, res) {
-   res.writeHead(200, {'Content-Type': 'application/json'});
-   var response = { "response" : "This is PUT method." }
-   console.log(response);
-   res.end(JSON.stringify(response));
-})
+   var response = { "response" : "This is PATCH method with id=" + {
+      unique_id, maxDrivingDistance, profilePictureScore, profileDescriptionScore
+   } + "." }
 
-app.delete('/', function (req, res) {
-   res.writeHead(200, {'Content-Type': 'application/json'});
-   var response = { "response" : "This is DELETE method." }
+   // TODO: Call CraftRank with parameters
+
    console.log(response);
    res.end(JSON.stringify(response));
-})
+});
 
 var server = app.listen(app.get("port"), function () {
 
@@ -52,5 +50,4 @@ var server = app.listen(app.get("port"), function () {
   var port = server.address().port
 
   console.log("Node.js API app listening at http://%s:%s", host, port)
-
-})
+});

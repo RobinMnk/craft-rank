@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "express-openapi": "^12.1.3"
+  }
+}
