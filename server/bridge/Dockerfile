@@ -17,6 +17,37 @@ ENV CGO_ENABLED=0
 
 ENV PATH="/usr/src/app/src:${PATH}"
 
+RUN apt-get update && apt-get upgrade -y && apt-get install -y tcl libsqlite3-dev
+
+# # Download latest release
+# RUN \
+#   wget \
+#   -O tcl.tar.gz \
+#   http://prdownloads.sourceforge.net/tcl/tcl8.6.13-src.tar.gz && \
+#   tar xvfz tcl.tar.gz
+
+# RUN \
+#   ./tcl/configure --prefix=/usr && \
+#   make && \
+#   make install
+
+# Download latest release
+RUN \
+  wget \
+  -O sqlite.tar.gz \
+  https://www.sqlite.org/src/tarball/sqlite.tar.gz?r=release && \
+  tar xvfz sqlite.tar.gz
+
+# Configure and make SQLite3 binary
+RUN \
+  ./sqlite/configure --prefix=/usr && \
+  make && \
+  make install && \
+  # Smoke test
+  sqlite3 --version
+
+# RUN apt update && apt upgrade -y && apt install -y sqlite3 libsqlite3-dev
+
 WORKDIR /usr/src/app
 
 COPY . .

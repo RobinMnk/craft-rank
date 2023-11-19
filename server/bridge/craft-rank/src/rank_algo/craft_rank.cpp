@@ -60,8 +60,10 @@ void CraftRankHandler::generateRankedListOfWorkers(int zipCode, ResultList& res)
 
 
 double CraftRankHandler::rank(int zipCode, int workerId) {
-    WorkerInfo workerInfo = db::getWorkerInfo(workerId);
-    ZipCodeInfo zipCodeInfo = db::getZipInfo(zipCode);
+    WorkerInfo workerInfo;
+    db::getWorkerInfo(workerId, workerInfo);
+    ZipCodeInfo zipCodeInfo;
+    db::getZipInfo(zipCode, zipCodeInfo);
 
     auto adjustedMaxDriveDistance = static_cast<double>(workerInfo.maxDrivingDistance + zipCodeInfo.extraDistance);
     double distance = CraftRankHandler::distanceBetweenZipAndWorker(zipCode, workerId);
